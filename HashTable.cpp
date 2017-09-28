@@ -5,11 +5,22 @@
 #include <ctime>
 #include <cstdlib>
 
+#import "main.cpp"
+
 #define L 5 //log of hash table dimension
 
 /***********************************************************************************************************/
 
-/*TODO equal*/
+bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
+{
+	int lenght = n1.size();
+	for (int i=0; i<lenght; i++)
+	{
+		if(!n1[i].equal(n2[i]))
+			return false;
+	}
+	return true;
+}
 
 /***********************************************************************************************************/
 
