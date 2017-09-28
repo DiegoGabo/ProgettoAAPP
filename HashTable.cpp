@@ -4,10 +4,12 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <ctime>
 #include <cstdlib>
+#include <stddef.h>
 
 #import "main.cpp"
 
 #define L 5 //log of hash table dimension
+using namespace boost::numeric::ublas;
 
 /***********************************************************************************************************/
 
@@ -34,10 +36,11 @@ class HashEntry
 		HashEntry();
 		bool isEmpty();
 		int getC();
+		std::vector<Nucleotide> getK();
 		void setC(int);
 		void setK(std::vector<Nucleotide>);
 		std::string toString();
-}
+};
 
 /*constructor*/
 HashEntry::HashEntry(){
@@ -45,8 +48,8 @@ HashEntry::HashEntry(){
 }
 
 /*check if key is empty*/
-HashEntry::isEmpty(){
-	if(!key) return true;
+bool HashEntry::isEmpty(){
+	if(key.size()==0) return true;
 	else return false;
 }
 
@@ -55,14 +58,19 @@ int HashEntry::getC(){
 	return count;
 }
 
+/*getter key*/
+std::vector<Nucleotide> HashEntry::getK(){
+	return key;
+}
+
 /*setter count*/
 void HashEntry::setC(int count){
-	this.count=count;
+	this->count=count;
 }
 
 /*setter key*/
 void HashEntry::setK(std::vector<Nucleotide> key){
-	this.key=key;
+	this->key=key;
 }
 
 /*to string*/
@@ -90,10 +98,10 @@ class HashTable
 		HashTable(int); 
 		IncrementValue(std::vector<Nucleotide>);
 		std::string toString();
-}
+};
 
 HashTable::HashTable(int k){
-	this.k=k;
+	this->k=k;
 	for(int i=0;i<pow(2,L);i++){
 		HashEntry he();
 		table.push_back(he);
@@ -108,7 +116,7 @@ HashTable::HashTable(int k){
 				m[i][j] = (bool)(rand() % 2);
 			}
 		}
-	}while(/*INVERTIBILE*/)
+	}while(INVERTIBILE)
 	*/
 }
 
@@ -118,7 +126,7 @@ HashTable::IncrementValue(std::vector<Nucleotide> key){
 	do{
 		pos = hash + HashTable::reprobe(i);
 		i++;
-	}while(!table[pos].isEmpty() && !equal(key,table[pos]);
+	}while(!(table[pos].isEmpty()) && !(equal(key,table[pos].getK())));
 	if(table[pos].isEmpty()) table[pos].setK(key); 
 	table[pos].setC(table[pos].getC()+1);
 }
@@ -134,7 +142,7 @@ int HashTable::f(std::vector<Nucleotide> key){
 std::string HashTable::toString(){
 	std::string temp;
 	for(HashEntry he : table){
-		temp.append(he.toString + "/n");
+		temp.append(he.toString() + "\n");
 	}
 	return temp;
 }

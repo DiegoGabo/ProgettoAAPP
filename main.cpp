@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 		dna_sequence.push_back(nucleotide);
 	}
 
-	for(Nucleotide nucleotide: dna_sequence)
+	for(Nucleotide nucleotide : dna_sequence)
 	{
 		cout << nucleotide.toString();
 	}
