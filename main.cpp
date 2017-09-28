@@ -15,7 +15,9 @@ class Nucleotide
 	
 	public:
 	 	Nucleotide(char);
-		char toString();
+		string toString();
+		int getBit(int);
+		bool equal(Nucleotide);
 };
 
 Nucleotide::Nucleotide(char value)
@@ -39,18 +41,41 @@ Nucleotide::Nucleotide(char value)
 	}
 }
 
-char Nucleotide::toString()
+bool Nucleotide::equal(Nucleotide n2)
+{
+	if(nucleotide[0]==n2.getBit(0) && nucleotide[1]==n2.getBit(1))
+		return true;
+	return false;
+}
+
+int Nucleotide::getBit(int pos)
+{
+	return nucleotide[pos];
+}
+
+string Nucleotide::toString()
 {
 	if(nucleotide[0]==0)
 	{
 		if(nucleotide[1]==0)
-			return 'A';
-		return 'C';
+			return "A";
+		return "G";
 	}
 
 	if(nucleotide[1]==0)
-		return 'G';
-	return 'T';
+		return "C";
+	return "T";
+}
+
+bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
+{
+	int lenght = n1.size();
+	for (int i=0; i<lenght; i++)
+	{
+		if(!n1[i].equal(n2[i]))
+			return false;
+	}
+	return true;
 }
 
 int main(int argc, char *argv[])
@@ -98,6 +123,9 @@ int main(int argc, char *argv[])
 			k_mer.push_back(dna_sequence[j]);
 			cout << dna_sequence[j].toString();
 		}
+
 		cout << "\n";
 	}
 }
+
+
