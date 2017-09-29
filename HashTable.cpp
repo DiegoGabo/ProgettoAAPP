@@ -103,7 +103,7 @@ class HashTable
 HashTable::HashTable(int k){
 	this->k=k;
 	for(int i=0;i<pow(2,L);i++){
-		HashEntry he();
+		HashEntry he;
 		table.push_back(he);
 	}
 	/*
