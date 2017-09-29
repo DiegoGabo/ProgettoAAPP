@@ -1,77 +1,19 @@
 #include <iostream>
 #include <fstream>
-#include <bitset> 
 #include <vector>
 #include <boost/program_options.hpp>
+#include "structures.hpp"
+#include "HashTable.hpp"
 
 using namespace std;
 namespace po = boost::program_options;
-
-class Nucleotide
-{
-	private:
-		 std::bitset<2> nucleotide;
-	
-	public:
-	 	Nucleotide(char);
-		string toString();
-		int getBit(int);
-		bool equal(Nucleotide);
-};
-
-Nucleotide::Nucleotide(char value)
-{
-	switch(value)
-	{
-		case ('A'):
-		    break;
-		 
-		case ('C'):
-			nucleotide.set(0);
-		    break;
-	 
-		case ('G'):
-			nucleotide.set(1);
-			break;
-
-		case ('T'):
-			nucleotide.set();
-		    break;
-	}
-}
-
-bool Nucleotide::equal(Nucleotide n2)
-{
-	if(nucleotide[0]==n2.getBit(0) && nucleotide[1]==n2.getBit(1))
-		return true;
-	return false;
-}
-
-int Nucleotide::getBit(int pos)
-{
-	return nucleotide[pos];
-}
-
-string Nucleotide::toString()
-{
-	if(nucleotide[0]==0)
-	{
-		if(nucleotide[1]==0)
-			return "A";
-		return "G";
-	}
-
-	if(nucleotide[1]==0)
-		return "C";
-	return "T";
-}
-
 
 int main(int argc, char *argv[])
 {
 	char ch;
 	int k_lenght = 4;
 
+	/*program options: the user can insert the lenght of k or ask help*/
 	po::options_description desc;
     
     desc.add_options()
@@ -88,6 +30,7 @@ int main(int argc, char *argv[])
         return 0;
     }
     
+	/*the file in which there is the dna sequence is opened*/
 	fstream dna_sequence_file("DNA_prova.txt", fstream::in);
 	std::vector<Nucleotide> dna_sequence;	
 
@@ -102,18 +45,19 @@ int main(int argc, char *argv[])
 		cout << nucleotide.toString();
 	}
 
-	cout << "\n\nK_mers:\n\n";
-	
+	HashTable hashTable(k_lenght);
+
 	for(int i=0; i<dna_sequence.size()-k_lenght; i++)
 	{
 		std::vector<Nucleotide> k_mer;
 		for(int j=i; j<i+k_lenght; j++)
 		{
 			k_mer.push_back(dna_sequence[j]);
-			cout << dna_sequence[j].toString();
 		}
-		cout << "\n";
+		hashTable.incrementValue(k_mer);
 	}
+
+	cout << "\nConteggio:\n" << hashTable.toString();
 }
 
 

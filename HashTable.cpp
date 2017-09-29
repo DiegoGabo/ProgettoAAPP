@@ -5,11 +5,13 @@
 #include <ctime>
 #include <cstdlib>
 #include <stddef.h>
+#include <Eigen/Dense>
+#include "structures.hpp"
+#include "HashTable.hpp"
 
-#import "main.cpp"
-
-#define L 5 //log of hash table dimension
+#define L 8 //log of hash table dimension
 using namespace boost::numeric::ublas;
+using namespace Eigen;
 
 /***********************************************************************************************************/
 
@@ -25,22 +27,6 @@ bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
 }
 
 /***********************************************************************************************************/
-
-/*a single entry of the hash table*/
-class HashEntry
-{
-	private:
-		std::vector<Nucleotide> key;
-		int count;
-	public:
-		HashEntry();
-		bool isEmpty();
-		int getC();
-		std::vector<Nucleotide> getK();
-		void setC(int);
-		void setK(std::vector<Nucleotide>);
-		std::string toString();
-};
 
 /*constructor*/
 HashEntry::HashEntry(){
@@ -79,54 +65,43 @@ std::string HashEntry::toString(){
 	for(Nucleotide n : key){
 		temp.append(n.toString());
 	}
-	temp.append(" "+count);
+	temp.append(" ");
+	temp.append(std::to_string(count));
 	return temp;
 }
 
 /***********************************************************************************************************/
 
-using namespace boost::numeric::ublas;
-class HashTable
-{
-	private:
-		int k;
-		std::vector<HashEntry> table;
-		matrix<bool> m;
-		int f(std::vector<Nucleotide>); /*TODO*/
-		int reprobe(int);
-	public:
-		HashTable(int); 
-		void IncrementValue(std::vector<Nucleotide>);
-		std::string toString();
-};
-
 HashTable::HashTable(int k){
+	
 	this->k=k;
+	matrix.resize(2*k, 2*k);
+	inverse.resize(2*k, 2*k);
+
 	for(int i=0;i<pow(2,L);i++){
 		HashEntry he;
 		table.push_back(he);
 	}
-	/*
-	matrix<bool> temp(2*k,2*k);
-	m=temp;
+	srand((unsigned)time(NULL));
 	do{
-		for(int i=0;i<2*k;i++){
+        for(int i=0;i<2*k;i++){
+            
 			for(int j=0;j<2*k;j++){
-				srand((unsigned)time(NULL));
-				m[i][j] = (bool)(rand() % 2);
-			}
-		}
-	}while(INVERTIBILE)
-	*/
+                matrix(i,j) = (rand() % 2);
+            	}
+        }
+	}
+	while(matrix.determinant() == 0);
 }
 
-void HashTable::IncrementValue(std::vector<Nucleotide> key){
+void HashTable::incrementValue(std::vector<Nucleotide> key){
 	int i=0, pos;
 	int hash=HashTable::f(key);
 	do{
-		pos = hash + HashTable::reprobe(i);
+		int tableLenght = pow(2, L);
+		pos = (hash + HashTable::reprobe(i)) % tableLenght;
 		i++;
-	}while(!(table[pos].isEmpty()) && !(equal(key,table[pos].getK())));
+	}while(!(table[pos].isEmpty()) && !(equal(key,table[pos].getK())) && i < 10);
 	if(table[pos].isEmpty()) table[pos].setK(key); 
 	table[pos].setC(table[pos].getC()+1);
 }
@@ -136,13 +111,26 @@ int HashTable::reprobe(int i){
 }
 
 int HashTable::f(std::vector<Nucleotide> key){
-	return 5;
+	VectorXf key_vector(2*k), result(2*k);
+	for(int i=0; i<k; i++)
+	{
+		Nucleotide currentNucleotide = key[i];
+		key_vector(2*i) = currentNucleotide.getBit(0);
+		key_vector(2*i+1) = currentNucleotide.getBit(1);
+	}
+	
+	result = matrix * key_vector; 
+	int hash=0;
+	for (int i=0; i<2*k; i++)
+		hash += result[i]*pow(2, i);
+	return hash;
 }
 
 std::string HashTable::toString(){
 	std::string temp;
 	for(HashEntry he : table){
-		temp.append(he.toString() + "\n");
+		if(!he.isEmpty())
+			temp.append(he.toString() + "\n");
 	}
 	return temp;
 }
