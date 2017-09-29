@@ -66,16 +66,6 @@ string Nucleotide::toString()
 	return "T";
 }
 
-bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
-{
-	int lenght = n1.size();
-	for (int i=0; i<lenght; i++)
-	{
-		if(!n1[i].equal(n2[i]))
-			return false;
-	}
-	return true;
-}
 
 int main(int argc, char *argv[])
 {
@@ -107,7 +97,7 @@ int main(int argc, char *argv[])
 		dna_sequence.push_back(nucleotide);
 	}
 
-	for(Nucleotide nucleotide: dna_sequence)
+	for(Nucleotide nucleotide : dna_sequence)
 	{
 		cout << nucleotide.toString();
 	}
