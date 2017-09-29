@@ -7,7 +7,6 @@
 using namespace std;
 namespace po = boost::program_options;
 
-
 class Nucleotide
 {
 	private:
@@ -123,7 +122,6 @@ int main(int argc, char *argv[])
 			k_mer.push_back(dna_sequence[j]);
 			cout << dna_sequence[j].toString();
 		}
-
 		cout << "\n";
 	}
 }
