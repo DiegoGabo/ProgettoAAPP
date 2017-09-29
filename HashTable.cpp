@@ -96,7 +96,7 @@ class HashTable
 		int reprobe(int);
 	public:
 		HashTable(int); 
-		IncrementValue(std::vector<Nucleotide>);
+		void IncrementValue(std::vector<Nucleotide>);
 		std::string toString();
 };
 
@@ -120,7 +120,7 @@ HashTable::HashTable(int k){
 	*/
 }
 
-HashTable::IncrementValue(std::vector<Nucleotide> key){
+void HashTable::IncrementValue(std::vector<Nucleotide> key){
 	int i=0, pos;
 	int hash=HashTable::f(key);
 	do{
