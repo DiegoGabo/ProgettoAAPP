@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include <bitset> 
+#include <bitset>
 #include <vector>
 #include <boost/program_options.hpp>
 
@@ -11,7 +11,7 @@ class Nucleotide
 {
 	private:
 		 std::bitset<2> nucleotide;
-	
+
 	public:
 	 	Nucleotide(char);
 		string toString();
@@ -25,11 +25,11 @@ Nucleotide::Nucleotide(char value)
 	{
 		case ('A'):
 		    break;
-		 
+
 		case ('C'):
 			nucleotide.set(0);
 		    break;
-	 
+
 		case ('G'):
 			nucleotide.set(1);
 			break;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 	int k_lenght = 4;
 
 	po::options_description desc;
-    
+
     desc.add_options()
         ("help, h", "Shows description of the options")
         ("k-lenght, k", po::value<int>(&k_lenght)->default_value(4), "Set the lenght of k; default value 4.");
@@ -81,17 +81,17 @@ int main(int argc, char *argv[])
 	po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
-    
+
     if(vm.count("help"))
     {
         cout << desc;
         return 0;
     }
-    
-	fstream dna_sequence_file("DNA_prova.txt", fstream::in);
-	std::vector<Nucleotide> dna_sequence;	
 
-	while (dna_sequence_file >> noskipws >> ch) 
+	fstream dna_sequence_file("DNA_prova.txt", fstream::in);
+	std::vector<Nucleotide> dna_sequence;
+
+	while (dna_sequence_file >> noskipws >> ch)
 	{
 		Nucleotide nucleotide(ch);
 		dna_sequence.push_back(nucleotide);
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
 	}
 
 	cout << "\n\nK_mers:\n\n";
-	
+
 	for(int i=0; i<dna_sequence.size()-k_lenght; i++)
 	{
 		std::vector<Nucleotide> k_mer;
