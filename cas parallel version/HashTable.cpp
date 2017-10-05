@@ -30,7 +30,7 @@ bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
 /***********************************************************************************************************/
 
 /*constructor*/
-HashEntry::HashEntry(){
+HashEntry::HashEntry() noexcept{
 	count=0;
 }
 
@@ -85,7 +85,7 @@ HashTable::HashTable(int k){
 	inverse.resize(2*k, 2*k);
 
 	for(int i=0;i<pow(2,L);i++){
-		HashEntry he;
+		std::atomic<HashEntry> he;
 		table.push_back(he);
 	}
 	srand((unsigned)time(NULL));
@@ -103,26 +103,27 @@ HashTable::HashTable(int k){
 void HashTable::incrementValue(std::vector<Nucleotide> key){
 	int i=0, pos;
 	int hash=HashTable::f(key);
-	
-	#pragma omp critical;
-	{
-		do{
-		int tableLenght = pow(2, L);
+	int tableLenght = pow(2, L);
+	HashEntry empty_he; /*CHIAVE VUOTA E COUNT 0*/
+	HashEntry new_he; new_he.setK(key); /*CHIAVE KEY E COUNT 0*/
+	bool done = false;
+	do{
 		pos = (hash + HashTable::reprobe(i)) % tableLenght;
 		i++;
-		}while(!(table[pos].isEmpty()) && !(equal(key,table[pos].getK())) && i < 10);
-		if(table[pos].isEmpty()) table[pos].setK(key); 
-		//
-		std::atomic<int>* obj = ???
-		bool done = false;
-		while(!done){
-			int* expected = table[pos].getPC();
-			int desired = table[pos].getC()+1;
-			done = std::atomic_compare_exchange_strong(obj,expected,desired);
-		}
-		//
-	}
+		done = std::atomic_compare_exchange_strong(&table[pos],&empty_he,new_he); /*CAS*/
+	}while(!done || !(equal(key,table[pos].load(std::memory_order_relaxed).getK())) || i>=10); /*esco anche se key non è vuota ma il confronto della chiave da successo*/
+	int oldval = table[pos].load(std::memory_order_relaxed).getC();
+	done = false;
+	do{
+		oldval = table[pos].load(std::memory_order_relaxed).getC();
+		HashEntry old_he; old_he.setC(oldval); old_he.setK(key); /*CHIAVE KEY E COUNT VECCHIO*/
+		new_he.setC(oldval+1); /*CHIAVE KEY E COUNT VECCHIO INCREMENTATO*/
+		done = std::atomic_compare_exchange_strong(&table[pos],&old_he,new_he); /*CAS*/
+	}while(!done);
+	/*NB. con i>=10 non funziona. confronto sempre nel secondo cas con un hash entry la cui key è uguaòe a quella corrente => ciclo infinito
+	..forse potrei mettere un table[pos].load(std::memory_order_relaxed).getK())) al posto di key*/	
 }
+
 
 int HashTable::reprobe(int i){
 	return (i*(i+1))/2;

@@ -11,7 +11,7 @@ class HashEntry
 		std::vector<Nucleotide> key;
 		int count;
 	public:
-		HashEntry();
+		HashEntry() noexcept;
 		bool isEmpty();
 		int getC();
 		std::vector<Nucleotide> getK();
@@ -25,9 +25,9 @@ class HashTable
 {
 	private:
 		int k;
-		std::vector<HashEntry> table;
+		std::vector<std::atomic<HashEntry>> table;
 		MatrixXf matrix, inverse;
-		int f(std::vector<Nucleotide>); /*TODO*/
+		int f(std::vector<Nucleotide>);
 		int reprobe(int);
 	public:
 		HashTable(int); 
