@@ -11,6 +11,7 @@
 #include "HashTable.hpp"
 
 #define L 8 //log of hash table dimension
+
 using namespace boost::numeric::ublas;
 using namespace Eigen;
 
