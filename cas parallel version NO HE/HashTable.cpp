@@ -13,7 +13,7 @@
 #define L 8 //log2 of hash table dimension
 #define MAX_REPROBE 4 //Log2 of max reprobe
 
-// NB funziona tutto se k<=8 e 0<=2k-l<=12
+// NB funziona tutto se k<=8 e 0<=2k-l<=16-MAX_REPROBE
 
 using namespace boost::numeric::ublas;
 using namespace Eigen;
