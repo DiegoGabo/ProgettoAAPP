@@ -66,6 +66,10 @@ void HashTable::incrementValue(std::vector<Nucleotide> key){
 	
 	unsigned short i=0;
 	int pos;
+
+	unsigned short p = 10;
+	cout << "\nf(10)=" << std::to_string(f(p));
+	cout << "\nf_rev(f(10)) = " << std::to_string(f_rev(f(p)));
 	
 	bool done = false;
 	unsigned short inv_hash = 0;
@@ -125,7 +129,7 @@ unsigned short HashTable::f(unsigned short key){
 	result = matrix * key_vector; 
 	unsigned short hash=0;
 	for (int i=0; i<2*k; i++)
-		hash += result[i]*pow(2, i);
+		hash += result[2*k-i-1]*pow(2, i);
 	return hash;
 }
 
@@ -140,7 +144,7 @@ unsigned short HashTable::f_rev(unsigned short inv_hash){
 	result = inverse * key_vector; 
 	unsigned short hash=0;
 	for (int i=0; i<2*k; i++)
-		hash += result[i]*pow(2, i);
+		hash += result[2*k-i-1]*pow(2, i);
 	return hash;
 	
 }
