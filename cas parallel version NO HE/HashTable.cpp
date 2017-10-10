@@ -254,7 +254,7 @@ unsigned short HashTable::f(unsigned short kv){
 	
 	VectorXf key_vector(2*k), result(2*k);
 	
-	for(int i=2*k-1; i>=0; i++){
+	for(int i=2*k-1; i>=0; i--){
 		key_vector(i) = (kv >> (2*k-1-i)) %2;
 	}
 	
