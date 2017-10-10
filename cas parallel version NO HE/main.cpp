@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
 	po::options_description desc;
     
     desc.add_options()
-        ("help, h", "Shows description of the options")
-		("file, f", po::value<std::string>(&file_name)->default_value("../dna_sequences/DNA_prova.txt"), "Set the name of the file in which there is the dna sequence; default value ../dna_sequences/DNA_prova.txt.")
-        ("k-lenght, k", po::value<int>(&k_lenght)->default_value(4), "Set the lenght of k; default value 4.");
+        ("h, help", "Shows description of the options")
+		("f, file", po::value<std::string>(&file_name)->default_value("../dna_sequences/DNA_prova.txt"), "Set the name of the file in which there is the dna sequence; default value ../dna_sequences/DNA_prova.txt.")
+        ("k, k_lenght", po::value<int>(&k_lenght)->default_value(4), "Set the lenght of k; default value 4.");
 
 	po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);

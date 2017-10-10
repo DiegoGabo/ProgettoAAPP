@@ -111,7 +111,7 @@ void HashTable::incrementValue(std::vector<Nucleotide> key){
 	do{
 		pos = (hash + HashTable::reprobe(i)) % tableLenght;
 		i++;
-		done = std::atomic_compare_exchange_strong(&table[pos],&empty_he,new_he); /*CAS*/
+		done = std::atomic_compare_exchange_strong(&table[pos],empty_he,new_he); /*CAS*/
 	}while(!done || !(equal(key,table[pos].load(std::memory_order_relaxed).getK())) || i>=10); /*esco anche se key non è vuota ma il confronto della chiave da successo*/
 	int oldval = table[pos].load(std::memory_order_relaxed).getC();
 	done = false;
@@ -119,7 +119,7 @@ void HashTable::incrementValue(std::vector<Nucleotide> key){
 		oldval = table[pos].load(std::memory_order_relaxed).getC();
 		HashEntry old_he; old_he.setC(oldval); old_he.setK(key); /*CHIAVE KEY E COUNT VECCHIO*/
 		new_he.setC(oldval+1); /*CHIAVE KEY E COUNT VECCHIO INCREMENTATO*/
-		done = std::atomic_compare_exchange_strong(&table[pos],&old_he,new_he); /*CAS*/
+		done = std::atomic_compare_exchange_strong(&table[pos],old_he,new_he); /*CAS*/
 	}while(!done);
 	/*NB. con i>=10 non funziona. confronto sempre nel secondo cas con un hash entry la cui key è uguaòe a quella corrente => ciclo infinito
 	..forse potrei mettere un table[pos].load(std::memory_order_relaxed).getK())) al posto di key*/	

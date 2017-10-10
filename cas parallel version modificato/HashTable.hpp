@@ -1,8 +1,11 @@
 #include <Eigen/Dense>
 #include <vector>  
 #include <string>
+#include <atomic>
+#include <cstdlib>
 
 #define K 4
+#define L 8
 
 using namespace Eigen;
 
@@ -26,7 +29,7 @@ class HashEntry
 class HashTable
 {
 	private:
-		std::vector<std::atomic<HashEntry>> table;
+		std::atomic<HashEntry> table[L];
 		MatrixXf matrix, inverse;
 		int f(Nucleotide []);
 		int reprobe(int);

@@ -9,8 +9,8 @@ class HashTable
 	private:
 		int k;
 		int m;
-		std::vector<unsigned short> thr; //hash+reprobe (16bit)
-		std::vector<int> tc; //count (32bit) ..ottimizzazione 2?
+		std::vector<unsigned short> table_hash_reprobe; //hash+reprobe (16bit)
+		std::vector<unsigned short> table_count; //count (32bit) ..ottimizzazione 2?
 		MatrixXf matrix, inverse;
 		unsigned short f(unsigned short);
 		unsigned short f_rev(unsigned short);

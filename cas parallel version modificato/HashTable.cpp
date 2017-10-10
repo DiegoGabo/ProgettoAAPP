@@ -86,10 +86,6 @@ HashTable::HashTable(){
 	matrix.resize(2*k, 2*k);
 	inverse.resize(2*k, 2*k);
 
-	for(int i=0;i<pow(2,L);i++){
-		std::atomic<HashEntry> he;
-		table.push_back(he);
-	}
 	srand((unsigned)time(NULL));
 	do{
         for(int i=0;i<2*k;i++){

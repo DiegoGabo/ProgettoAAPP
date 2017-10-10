@@ -25,6 +25,7 @@ class HashTable
 	private:
 		int k;
 		std::vector<HashEntry> table;
+		int num=0;
 		MatrixXf matrix, inverse;
 		int f(std::vector<Nucleotide>); /*TODO*/
 		int reprobe(int);
@@ -32,4 +33,5 @@ class HashTable
 		HashTable(int); 
 		void incrementValue(std::vector<Nucleotide>);
 		std::string toString();
+		int getNum();
 };
