@@ -13,7 +13,6 @@ class HashTable
 		std::vector<unsigned short> table_count; //count (32bit) ..ottimizzazione 2?
 		MatrixXf matrix, inverse;
 		unsigned short f(unsigned short);
-		unsigned short f_rev(unsigned short);
 		unsigned short key_vector(std::vector<Nucleotide>);
 		int reprobe(unsigned short);
 	public:
@@ -21,3 +20,4 @@ class HashTable
 		void incrementValue(std::vector<Nucleotide>);
 		std::string toString();
 };
+
