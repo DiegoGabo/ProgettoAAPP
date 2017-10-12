@@ -6,15 +6,16 @@
 #include <cstdlib>
 #include <stddef.h>
 #include <Eigen/Dense>
+#include <omp.h>
 #include "structures.hpp"
 #include "HashTable.hpp"
 
-#define L 8 //log of hash table dimension
 using namespace boost::numeric::ublas;
 using namespace Eigen;
 
 /***********************************************************************************************************/
 
+/*function that checks if two nucleotides are equal*/
 bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
 {
 	int lenght = n1.size();
@@ -72,9 +73,11 @@ std::string HashEntry::toString(){
 
 /***********************************************************************************************************/
 
-HashTable::HashTable(int k){
+/*constructor that initialize the hash table*/
+HashTable::HashTable(int k, int L){
 	
 	this->k=k;
+	this->L=L;
 	matrix.resize(2*k, 2*k);
 	inverse.resize(2*k, 2*k);
 
@@ -94,11 +97,12 @@ HashTable::HashTable(int k){
 	while(matrix.determinant() == 0);
 }
 
+/*method that given a key(vector of Nucleotides) update the count value in the proper hentry of the hash table*/
 void HashTable::incrementValue(std::vector<Nucleotide> key){
 	int i=0, pos;
 	int hash=HashTable::f(key);
 	
-	#pragma omp critical;
+	#pragma omp critical
 	{
 		do{
 		int tableLenght = pow(2, L);
@@ -110,10 +114,12 @@ void HashTable::incrementValue(std::vector<Nucleotide> key){
 	}
 }
 
+/*method that given an integer as a parameter returns the number of reprobe*/
 int HashTable::reprobe(int i){
 	return (i*(i+1))/2;
 }
 
+/*method that given a key returns its hash*/
 int HashTable::f(std::vector<Nucleotide> key){
 	VectorXf key_vector(2*k), result(2*k);
 	for(int i=0; i<k; i++)
@@ -130,6 +136,7 @@ int HashTable::f(std::vector<Nucleotide> key){
 	return hash;
 }
 
+/*method that returns a string that represents the hash table*/
 std::string HashTable::toString(){
 	std::string temp;
 	for(HashEntry he : table){

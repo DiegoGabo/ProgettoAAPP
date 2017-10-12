@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
 #include <vector>
 #include <boost/program_options.hpp>
 #include "structures.hpp"
@@ -8,7 +10,7 @@
 #include <sys/time.h>
 #include <omp.h>
 
-#define L 10
+#define MAX_FILE 100
 
 using namespace std;
 namespace po = boost::program_options;
@@ -17,6 +19,7 @@ int main(int argc, char *argv[])
 {
 	char ch;
 	int k_lenght = 4;
+	int L = 10;
 	std::string file_name;
 
 	//clock initialized for calculating execution time 
@@ -28,6 +31,7 @@ int main(int argc, char *argv[])
     
     desc.add_options()
         ("h, help", "Shows description of the options")
+		("lenght, ", po::value<int>(&L)->default_value(10), "Set the lenght of the hash table; default value 10.")
 		("f, file", po::value<std::string>(&file_name)->default_value("../dna_sequences/DNA_prova.txt"), "Set the name of the file in which there is the dna sequence; default value ../dna_sequences/DNA_prova.txt.")
         ("k, k_lenght", po::value<int>(&k_lenght)->default_value(4), "Set the lenght of k; default value 4.");
 
@@ -55,11 +59,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	/*cout << "Sequence read:\n";
-	for(Nucleotide nucleotide : dna_sequence)
-		cout << nucleotide.toString();*/
-
-	HashTable hashTable(k_lenght);	//initialize the hash table
+	HashTable hashTable(k_lenght, L);	//initialize the hash table
 
 	/*cycle in which the k-mer are added to the hash table and so counted*/
 	#pragma omp parallel for simd
@@ -72,52 +72,69 @@ int main(int argc, char *argv[])
 		}
 		hashTable.incrementValue(k_mer);
 	}
-	//salvo su disco
-	{
-		std::string result_name = "result";
-		result_name.append(std::to_string(hashTable.getNum()));
-		std::ofstream outfile(result_name);
-		hashTable.order(0, pow(2, L));
-		cout << "\nscrivo su " << result_name;
-		outfile << hashTable.toString();
-		outfile.close();
-		hashTable.incrementNum();
-	}
 	
-	std::vector<fstream> results;
+	//the remaining entries of the table are saved on disk
+	std::string result_name = "result";
+	result_name.append(std::to_string(hashTable.getNum()));
+	std::ofstream outfile(result_name);
+	hashTable.order(0, pow(2, L));
+	outfile << hashTable.toString();
+	outfile.close();
+	hashTable.incrementNum();
+	
+	
+	ifstream results[MAX_FILE];	//array in which there are the file written
+
 	std::vector<int> key(hashTable.getNum());
 	std::vector<long int> count(hashTable.getNum());
-	//unisci file
+
+	std::ofstream out_final_file("final_result"); //file in which the result will be written
+	
+	//all the file previously written are now opened
 	for(int i=0; i<hashTable.getNum(); i++)
 	{
 		std::string result_name = "result";
 		result_name.append(std::to_string(i));
-		fstream result_stream(result_name, fstream::in);
-		//results.pushBack(result_stream);
+		results[i].open(result_name);
 	}
-
-	bool finish = false;
 	
+	//the first line of all file is read
+	for(int i=0; i<hashTable.getNum(); i++)
+		if(!(results[i] >> key[i] >> count[i]))
+			key[i]=-1;		
+	
+	bool finish = false;
+
+	//while alll file are completely read the cicle sum the values of key that are equal
 	while(!finish)
 	{
+		int min = INT_MAX;
+		//the minimum key is found
 		for(int i=0; i<hashTable.getNum(); i++)
-		{
-			if(!(results[i] >> key[i] >> count[i]))
-			{
-				key[i]=-1;
-			}
-		}
+			if(key[i] < min && key[i] != -1)
+				min = key[i];	
+		
+		int count_min = 0;
+		//the count of the minimun key in icremented taking into account all files
+		for(int i=0; i<hashTable.getNum(); i++)
+			if(key[i] == min)
+				do
+				{
+					count_min += count[i];
+					if(!(results[i] >> key[i] >> count[i]))
+						key[i]=-1;
+				}
+				while(key[i] != -1 && key[i]==min);
+
 		finish = true;
+		//cycle that check if all files are completely read
 		for(int i=0; i<hashTable.getNum(); i++)
-		{
 			if(key[i] != -1)
 				finish = false;
-		}
-	}
-	for(int i=0; i<hashTable.getNum(); i++)
-		cout << "\nKey " << std::to_string(key[i]) << "\tcount " << std::to_string(count[i]);
-	
 
+		out_final_file << "\n" << std::to_string(min) << "\t" << std::to_string(count_min);
+	}
+	
 	/*now the extecution time is calcolated and then printed*/
 	gettimeofday(&end, NULL);
     float executionTime = ((end.tv_sec  - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;	

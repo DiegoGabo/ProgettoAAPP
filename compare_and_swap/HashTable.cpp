@@ -12,18 +12,15 @@
 #include "structures.hpp"
 #include "HashTable.hpp"
 
-#define L 10 //log2 of hash table dimension
-#define MAX_REPROBE 4 //Log2 of max reprobe
-//#define MAX_COUNT 4294967285
-#define MAX_COUNT 10
-
-// NB funziona tutto se k<=8 e 0<=2k-l<=16-MAX_REPROBE
+#define MAX_REPROBE 10 //Log2 of max reprobe
+#define MAX_COUNT 4294967285 //max value of count
 
 using namespace boost::numeric::ublas;
 using namespace Eigen;
 
 /***********************************************************************************************************/
 
+/*function that checks if two nucleotides are equal*/
 bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
 {
 	int lenght = n1.size();
@@ -37,7 +34,8 @@ bool equal(std::vector<Nucleotide> n1, std::vector<Nucleotide> n2)
 
 /***********************************************************************************************************/
 
-HashTable::HashTable(int k){
+/*constructor that initialize the hash table*/
+HashTable::HashTable(int k, int L){
 	
 	this->k=k;
 	this->num=0;
@@ -66,6 +64,7 @@ HashTable::HashTable(int k){
 	this->flush();
 }
 
+/*method that given a key(vector of Nucleotides) update the count value in the proper hentry of the hash table*/
 void HashTable::incrementValue(std::vector<Nucleotide> key){
 	
 	int key_value = key_vector(key); //key vector 
@@ -88,22 +87,35 @@ void HashTable::incrementValue(std::vector<Nucleotide> key){
 	}
 	while(!done && i < MAX_REPROBE );
 	
+	bool is_max_reprobe = false;
 	if(i>=MAX_REPROBE) 
 	#pragma omp critical
+	//block in which the content of the hash table is saved on the disk and the hash table is flushed
 	{
-		//salvo su disco
-		stop = true;
+		stop = true; //bool used to block the other threads
+
+		//the file is created
 		std::string file_name = "result";
 		file_name.append(std::to_string(num));
-		cout << "\nscrivo su " << file_name;
 		std::ofstream outfile(file_name);
+
+		//the hash table is ordered and then written on the file
 		this->order(0, this->m);
-		outfile << this->toString();
+		outfile << this->toString(); 
 		outfile.close();
+		
+		//the hash table is flushed
 		num++;
 		this->flush();
 		stop = false;
+		is_max_reprobe = true;
+
+		//the key count is now updated
+		this->incrementValue(key);
 	}
+	
+	if(is_max_reprobe)
+		return;
 	
 	done = false;
 	int oldCount = table_count[pos];
@@ -115,7 +127,7 @@ void HashTable::incrementValue(std::vector<Nucleotide> key){
 	
 }
 
-
+/*method that given a key returns its hash*/
 int HashTable::f(int key){
 	
 	VectorXf key_vector(2*k), result(2*k);
@@ -131,7 +143,7 @@ int HashTable::f(int key){
 	return hash;
 }
 	
-
+/*method that trasforms the key passed as parameter to an integer*/
 int HashTable::key_vector(std::vector<Nucleotide> key){
 	int key_value = 0;
 	for(int i=0; i<k; i++){
@@ -141,10 +153,12 @@ int HashTable::key_vector(std::vector<Nucleotide> key){
 	return key_value+1;
 }
 
+/*method that given an integer as a parameter returns the number of reprobe*/
 int HashTable::reprobe(int i){
 	return (i*(i+1))/2;
 }
 
+/*method that swaps two entry in the hash table*/
 void HashTable::swap(int a, int b)
 {
     int t_hash = table_hash[a];
@@ -155,11 +169,7 @@ void HashTable::swap(int a, int b)
 	table_count[b] = t_count;
 }
  
-/* This function takes last element as pivot, places
-   the pivot element at its correct position in sorted
-    array, and places all smaller (smaller than pivot)
-   to left of pivot and all greater elements to right
-   of pivot */
+/*partition method of the quick sort algorithm*/
 int HashTable::partition_hash(int low, int high)
 {
     int pivot = table_hash[high];    // pivot
@@ -167,8 +177,7 @@ int HashTable::partition_hash(int low, int high)
  
     for (int j = low; j <= high- 1; j++)
     {
-        // If current element is smaller than or
-        // equal to pivot
+        // If current element is smaller than or equal to pivot
         if (table_hash[j] <= pivot)
         {
             i++;    // increment index of smaller element
@@ -179,26 +188,22 @@ int HashTable::partition_hash(int low, int high)
     return (i + 1);
 }
  
-/* The main function that implements QuickSort
- arr[] --> Array to be sorted,
-  low  --> Starting index,
-  high  --> Ending index */
+/*method that order the hashTable according to quicksort algorithm*/
 void HashTable::order(int low, int high)
 {
     if (low < high)
     {
-        /* pi is partitioning index, arr[p] is now
-           at right place */
+        //pi is partitioning index, arr[p] is now at right place 
         int pi = partition_hash(low, high);
  
-        // Separately sort elements before
-        // partition and after partition
+        // Separately sort elements before partition and after partition
         order(low, pi - 1);
 		order(pi + 1, high);
 		
     }
 }
 
+/*method that flush the content of the hash table*/
 void HashTable::flush()
 {
 	for(int i=0; i<m; i++)
@@ -208,17 +213,19 @@ void HashTable::flush()
 	}
 }
 
+/*method that the return the number of file in which there are the contents of the previous hash table*/
 int HashTable::getNum()
 {
 	return this->num;
 }
 
+/*method that increments the number of the field num*/
 void HashTable::incrementNum()
 {
 	this->num = this->num+1;
 }
 
-
+/*method that returns a string that represents the hash table*/
 std::string HashTable::toString(){
 	std::string temp = "";
 	for(int i=0; i<m; i++)

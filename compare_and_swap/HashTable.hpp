@@ -4,6 +4,7 @@
 
 using namespace Eigen;
 
+/*class used to implement the hash table in which are counted the k-mers*/
 class HashTable
 {
 	private:
@@ -18,14 +19,15 @@ class HashTable
 		int key_vector(std::vector<Nucleotide>);
 		int reprobe(int);
 		int partition_hash(int, int);
-		void swap(int, int);
+		void swap(int, int);	
+		
 	public:
-		HashTable(int); 
+		HashTable(int, int); 
 		void incrementValue(std::vector<Nucleotide>);
 		std::string toString();
-		void order(int, int);
 		int getNum();
 		void incrementNum();
 		void flush();
+		void order(int, int);
 };
 

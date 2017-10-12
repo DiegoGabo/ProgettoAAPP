@@ -20,17 +20,18 @@ class HashEntry
 		std::string toString();
 };
 
+/*class used to implement the hash table in which are counted the k-mers*/
 class HashTable
 {
 	private:
-		int k;
+		int k, L;
 		std::vector<HashEntry> table;
 		int num=0;
 		MatrixXf matrix, inverse;
-		int f(std::vector<Nucleotide>); /*TODO*/
+		int f(std::vector<Nucleotide>); 
 		int reprobe(int);
 	public:
-		HashTable(int); 
+		HashTable(int, int); 
 		void incrementValue(std::vector<Nucleotide>);
 		std::string toString();
 		int getNum();
