@@ -8,6 +8,8 @@
 #include <sys/time.h>
 #include <omp.h>
 
+#define L 10
+
 using namespace std;
 namespace po = boost::program_options;
 
@@ -70,9 +72,53 @@ int main(int argc, char *argv[])
 		}
 		hashTable.incrementValue(k_mer);
 	}
+	//salvo su disco
+	{
+		std::string result_name = "result";
+		result_name.append(std::to_string(hashTable.getNum()));
+		std::ofstream outfile(result_name);
+		hashTable.order(0, pow(2, L));
+		cout << "\nscrivo su " << result_name;
+		outfile << hashTable.toString();
+		outfile.close();
+		hashTable.incrementNum();
+	}
+	
+	std::vector<fstream> results;
+	std::vector<int> key(hashTable.getNum());
+	std::vector<long int> count(hashTable.getNum());
+	//unisci file
+	for(int i=0; i<hashTable.getNum(); i++)
+	{
+		std::string result_name = "result";
+		result_name.append(std::to_string(i));
+		fstream result_stream(result_name, fstream::in);
+		//results.pushBack(result_stream);
+	}
+
+	bool finish = false;
+	
+	while(!finish)
+	{
+		for(int i=0; i<hashTable.getNum(); i++)
+		{
+			if(!(results[i] >> key[i] >> count[i]))
+			{
+				key[i]=-1;
+			}
+		}
+		finish = true;
+		for(int i=0; i<hashTable.getNum(); i++)
+		{
+			if(key[i] != -1)
+				finish = false;
+		}
+	}
+	for(int i=0; i<hashTable.getNum(); i++)
+		cout << "\nKey " << std::to_string(key[i]) << "\tcount " << std::to_string(count[i]);
+	
 
 	/*now the extecution time is calcolated and then printed*/
-	cout << "\nConteggio:\n" << hashTable.toString();	//prints the content of the hash table
 	gettimeofday(&end, NULL);
     float executionTime = ((end.tv_sec  - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;	
     cout << "\nExecution time : "<< executionTime << "\n";
