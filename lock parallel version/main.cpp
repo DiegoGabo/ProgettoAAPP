@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 	HashTable hashTable(k_lenght, L);	//initialize the hash table
 
 	/*cycle in which the k-mer are added to the hash table and so counted*/
-	#pragma omp parallel for simd
+	#pragma omp parallel for
 	for(int i=0; i<dna_sequence.size()-k_lenght; i++)
 	{
 		std::vector<Nucleotide> k_mer;
@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
 		{
 			k_mer.push_back(dna_sequence[j]);
 		}
+		#pragma omp critical
 		hashTable.incrementValue(k_mer);
 	}
 

@@ -100,18 +100,20 @@ HashTable::HashTable(int k, int L){
 /*method that given a key(vector of Nucleotides) update the count value in the proper hentry of the hash table*/
 void HashTable::incrementValue(std::vector<Nucleotide> key){
 	int i=0, pos;
-	int hash=HashTable::f(key);
-	
-	#pragma omp critical
+	int hash=HashTable::f(key);	
+
+	do
 	{
-		do{
 		int tableLenght = pow(2, L);
 		pos = (hash + HashTable::reprobe(i)) % tableLenght;
 		i++;
-		}while(!(table[pos].isEmpty()) && !(equal(key,table[pos].getK())) && i < 10);
-		if(table[pos].isEmpty()) table[pos].setK(key); 
-		table[pos].setC(table[pos].getC()+1);
 	}
+	while(!(table[pos].isEmpty()) && !(equal(key,table[pos].getK())) && i < 10);
+	
+	if(table[pos].isEmpty()) 
+		table[pos].setK(key); 
+	
+	table[pos].setC(table[pos].getC()+1);
 }
 
 /*method that given an integer as a parameter returns the number of reprobe*/
