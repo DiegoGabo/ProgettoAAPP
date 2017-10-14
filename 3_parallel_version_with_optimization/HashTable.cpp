@@ -12,7 +12,7 @@
 #include "structures.hpp"
 #include "HashTable.hpp"
 
-#define MAX_REPROBE 10 //Log2 of max reprobe
+#define MAX_REPROBE 10 //log2 of max reprobe
 #define MAX_COUNT 4294967285 //max value of count
 
 using namespace boost::numeric::ublas;

@@ -13,7 +13,7 @@ class HashTable
 		int num;
 		bool stop;
 		std::vector<int> table_hash; 
-		std::vector<int> table_count; //count (32bit) ..ottimizzazione 2?
+		std::vector<int> table_count; 
 		MatrixXf matrix, inverse;
 		int f(int);
 		int key_vector(std::vector<Nucleotide>);
