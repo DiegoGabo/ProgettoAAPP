@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 	char ch;
 	int k_lenght = 4;
 	int L = 10;
+	int thread = 24;
 	std::string file_name;
 
 	//clock initialized for calculating execution time 
@@ -31,13 +32,15 @@ int main(int argc, char *argv[])
     
     desc.add_options()
         ("h, help", "Shows description of the options")
-		("lenght, ", po::value<int>(&L)->default_value(10), "Set the lenght of the hash table; default value 10.")
+		("l, lenght", po::value<int>(&L)->default_value(10), "Set the lenght of the hash table; default value 10.")
+		("t, thread", po::value<int>(&thread)->default_value(24), "Set the number of threads")
 		("f, file", po::value<std::string>(&file_name)->default_value("../dna_sequences/DNA_prova.txt"), "Set the name of the file in which there is the dna sequence; default value ../dna_sequences/DNA_prova.txt.")
         ("k, k_lenght", po::value<int>(&k_lenght)->default_value(4), "Set the lenght of k; default value 4.");
 
 	po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
+	omp_set_num_threads(thread);
     
     if(vm.count("help"))
     {
