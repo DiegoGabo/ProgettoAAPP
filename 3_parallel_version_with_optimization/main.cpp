@@ -135,7 +135,21 @@ int main(int argc, char *argv[])
 			if(key[i] != -1)
 				finish = false;
 
-		out_final_file << "\n" << std::to_string(min) << "\t" << std::to_string(count_min);
+		//translate the key
+		cout<<min<<"\n";
+		std::string mer;
+		for(int i=0;i<k_lenght;i++){
+			int bit_zero = min%2;
+			min = min >> 1;
+			int bit_one = min%2;
+			min = min >> 1;
+			cout<<bit_zero<<bit_one;
+			char ch = Nucleotide::getChar(bit_zero,bit_one);
+			mer.push_back(ch);
+		}
+		cout<<"\n";
+		
+		out_final_file << "\n" << mer << "\t" << std::to_string(count_min);
 	}
 	
 	/*now the extecution time is calcolated and then printed*/

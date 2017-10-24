@@ -14,4 +14,5 @@ class Nucleotide
 		string toString();
 		bool equal(Nucleotide);
 		int getBit(int);
+		static char getChar(bool,bool);
 };

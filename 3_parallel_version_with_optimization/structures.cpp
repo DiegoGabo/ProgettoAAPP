@@ -64,3 +64,17 @@ string Nucleotide::toString()
 	return "T";
 }
 
+/*return the string that describes the bitset*/
+char Nucleotide::getChar(bool bit_zero,bool bit_one){
+	if(!bit_zero)
+	{
+		if(!bit_one)
+			return 'A';
+		return 'G';
+	}
+
+	if(!bit_one)
+		return 'C';
+	return 'T';
+}
+
