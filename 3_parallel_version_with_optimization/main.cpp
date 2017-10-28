@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 
 	/*cycle in which the k-mer are added to the hash table and so counted*/
 	#pragma omp parallel for simd
-	for(int i=0; i<dna_sequence.size()-k_lenght; i++)
+	for(int i=0; i<=dna_sequence.size()-k_lenght; i++)
 	{
 		std::vector<Nucleotide> k_mer;
 		for(int j=i; j<i+k_lenght; j++)

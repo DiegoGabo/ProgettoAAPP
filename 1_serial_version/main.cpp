@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	HashTable hashTable(k_lenght, L);	//initialize the hash table
 
 	/*cycle in which the k-mer are added to the hash table and so counted*/
-	for(int i=0; i<dna_sequence.size()-k_lenght; i++)
+	for(int i=0; i<=dna_sequence.size()-k_lenght; i++)
 	{
 		std::vector<Nucleotide> k_mer;
 		for(int j=i; j<i+k_lenght; j++)
