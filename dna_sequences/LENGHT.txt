@@ -1,0 +1,6 @@
+gbbct155 		11351398
+gbbct367 		1707366
+gbgss116 		5608940
+hs_alt_CHM1_1.1_chr22 	34740488
+random_dna		1000000
+Sequence1		17047
