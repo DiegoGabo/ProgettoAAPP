@@ -228,7 +228,7 @@ void HashTable::incrementNum()
 /*method that returns a string that represents the hash table*/
 std::string HashTable::toString(){
 	std::string temp = "";
-	for(int i=0; i<m; i++)
+	for(int i=0; i<m+2; i++)
 		if (table_count[i] != 0 && table_hash[i] != 0)
 		{
 			temp.append(std::to_string(table_hash[i]));
