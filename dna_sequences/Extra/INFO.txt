@@ -1,3 +1,0 @@
-INFORMATION
-
-Sequence 1 (17041) : ftp://ftp.ncbi.nih.gov/genomes/Acinonyx_jubatus/CHR_MT/
